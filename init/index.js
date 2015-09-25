@@ -23,8 +23,10 @@ module.exports = function (app) {
   var initOrder = config.init.order || [];
 
   initOrder.forEach((name) => {
-    var initFunction = require(path.join(INIT_PATH, name));
-    initFunction(app, config);
+    var fn = name.split(':');
+    var initFunction = require(path.join(INIT_PATH, fn[0]));
+
+    fn.length > 1 ? initFunction[fn[1]](app, config[fn[0]][fn[1]]) : initFunction(app, config[fn[0]]);
     logs.info('initialized', name);
   });
 
